@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#141414">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Veturilo">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Veturilo</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; width: 100%; overflow: hidden; background: #141414; }
+
+@font-face {
+  font-family: 'SFPro';
+  src: url('SFPro.ttf') format('truetype');
+  font-weight: 400;
+}
+
+body {
+  font-family: 'SFPro', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+/* Frame: 402x874px, scale down on smaller screens */
+.frame {
+  position: relative;
+  width: 402px;
+  height: 874px;
+  flex-shrink: 0;
+  transform-origin: center center;
+}
+
+/* Veturilo Logo: x=126 y=150 w=150 h=76 */
+.logo {
+  position: absolute;
+  left: 126px;
+  top: 150px;
+  width: 150px;
+  height: 76px;
+}
+.logo svg {
+  width: 150px;
+  height: 76px;
+}
+
+/* Search field: x=30 y=407 w=272 h=60 */
+.search-field {
+  position: absolute;
+  left: 30px;
+  top: 407px;
+  width: 272px;
+  height: 60px;
+  background: #282828;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+  gap: 15px;
+}
+
+.icon-box {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #FFFFFF;
+  font-family: 'SFPro', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  caret-color: #ED1C24;
+  padding-right: 15px;
+}
+.search-input::placeholder { color: #3C3C3C; }
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+input[type=number] { -moz-appearance: textfield; }
+
+/* Station name: x=30 y=477 w=272 h=60 */
+.station-name {
+  position: absolute;
+  left: 30px;
+  top: 477px;
+  width: 272px;
+  height: 60px;
+  background: #282828;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.station-name.visible { opacity: 1; }
+.station-name span {
+  color: #FFFFFF;
+  font-family: 'SFPro', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 242px;
+  line-height: 30px;
+  text-align: center;
+}
+
+/* Nav button: x=312 y=407 w=60 h=60 */
+.btn-nav {
+  position: absolute;
+  left: 312px;
+  top: 407px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #282828;
+  transition: background 0.2s, transform 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-nav.active { background: #ED1C24; }
+.btn-nav:active { transform: scale(0.9); }
+.btn-nav .icon-box svg {
+  width: 16px;
+  height: 21px;
+}
+</style>
+</head>
+<body>
+
+<div class="frame" id="frame">
+
+  <!-- Veturilo Logo (SVG, transparent) -->
+  <div class="logo">
+    <svg width="150" height="76" viewBox="0 0 150 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M67.9126 25.6621L79.7939 13.5619L62.8889 14.0316L60.5801 8.68771L90.4051 8.37146L90.756 9.18203L70.2077 30.9753L67.9126 25.6621ZM9.23386 75.9158L0 56.5404H5.17691L10.2175 67.4524L15.0022 56.5404H20.1239L11.2991 75.9158H9.23386Z" fill="#ED1C24"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M139.079 76C135.847 76 133.213 75.0344 131.185 73.097C129.15 71.1612 128.134 68.8599 128.134 66.1964C128.134 63.5774 129.147 61.2854 131.162 59.3219C133.182 57.36 135.821 56.3775 139.081 56.3775C142.332 56.3775 144.967 57.3631 146.976 59.3311C148.99 61.2992 150 63.5836 150 66.1964C150 68.8415 148.978 71.1427 146.94 73.0832C144.894 75.0298 142.274 76 139.079 76ZM143.44 61.9686C142.335 60.8986 140.887 60.3643 139.079 60.3643C137.264 60.3643 135.805 60.8986 134.702 61.9686C133.596 63.0324 133.041 64.4433 133.041 66.198C133.041 67.9419 133.596 69.3481 134.702 70.4212C135.807 71.4912 137.265 72.0285 139.079 72.0285C140.887 72.0285 142.335 71.4912 143.44 70.4212C144.541 69.3481 145.091 67.9419 145.091 66.198C145.091 64.4433 144.541 63.0324 143.44 61.9686ZM111.741 56.6262H116.496V72.2496H126.294V75.7544H111.741V56.6262ZM96.5487 42.2202C92.6159 42.2202 89.0538 40.6221 86.4737 38.0384C83.8968 35.4562 82.3003 31.887 82.3003 27.9462C82.3003 24.0054 83.8968 20.4346 86.4737 17.8509C87.1126 17.2123 87.8128 16.6335 88.5604 16.1239C91.1022 14.4075 93.699 13.8764 95.3215 13.7229C95.729 13.6891 96.1335 13.6707 96.5487 13.6707C100.482 13.6707 104.044 15.2688 106.622 17.8509C109.201 20.4346 110.796 24.0039 110.796 27.9462C110.796 31.8885 109.201 35.4562 106.622 38.0384C104.044 40.6221 100.483 42.2202 96.5487 42.2202ZM104.344 20.1353C102.349 18.1365 99.5914 16.8991 96.5487 16.8991C93.506 16.8991 90.7482 18.1365 88.7519 20.1353C86.7572 22.1325 85.5238 24.8958 85.5238 27.9462C85.5238 30.9966 86.7587 33.7583 88.7519 35.7571C90.7482 37.7544 93.506 38.9917 96.5487 38.9917C99.5914 38.9917 102.349 37.7544 104.344 35.7571C106.34 33.7568 107.572 30.995 107.572 27.9462C107.574 24.8958 106.34 22.1325 104.344 20.1353ZM86.2807 4.4658C85.8594 3.25609 84.8605 2.82471 83.2395 2.82471H79.1397V0H83.3376C88.3015 0 88.8806 2.82164 90.1339 6.56438H86.9272C86.7311 5.83978 86.5151 5.1336 86.2807 4.4658ZM65.9592 4.45966C64.9327 4.62853 63.6534 4.97548 62.6177 5.2165C62.6575 5.39151 62.7755 5.84131 62.9287 6.32335H59.7542C59.5857 5.8889 59.4386 5.49437 59.3957 5.31322H56.0757V4.53335L56.1937 2.48851H68.6725C68.7521 2.82932 68.867 2.81704 68.867 3.17012C68.864 4.00833 66.8018 4.31996 65.9592 4.45966ZM60.9033 15.9581C62.6207 17.1586 63.8479 18.4051 64.7197 19.5411C65.4582 20.5451 66.0679 21.6505 66.5245 22.831C66.9994 24.2879 67.9064 26.9806 67.1955 30.8676L67.1925 30.8784C66.621 33.6632 65.2421 36.1501 63.3117 38.0844C60.7332 40.6681 57.1711 42.2678 53.2383 42.2678C49.3054 42.2678 45.7433 40.6681 43.1648 38.0844C40.5848 35.5023 38.9914 31.933 38.9914 27.9922C38.9914 24.0515 40.5863 20.4822 43.1648 17.8985C45.7219 15.3363 49.2487 13.7413 53.1464 13.7167C53.8067 13.7183 54.896 13.7689 56.1584 14.0176C57.8744 14.3768 59.4754 15.0446 60.9033 15.9581ZM45.4415 20.1798C43.4467 22.1786 42.2119 24.9419 42.2119 27.9907C42.2119 31.0411 43.4467 33.8029 45.4415 35.8032C47.4363 37.802 50.1925 39.0378 53.2383 39.0378C56.2825 39.0378 59.0387 37.802 61.0335 35.8032C63.0283 33.8029 64.2631 31.0411 64.2631 27.9907C64.2631 24.9419 63.0283 22.1786 61.0335 20.1798C59.0387 18.181 56.2825 16.9436 53.2383 16.9436C50.194 16.9452 47.4378 18.181 45.4415 20.1798ZM22.6165 56.6262H36.4972V60.131H27.3691V64.1454H36.0774V67.6487H27.3691V72.2481H36.6872V75.7528H22.6165V56.6262ZM46.7239 75.7544V60.131H39.8126V56.6262H58.3922V60.131H51.4794V75.7544H46.7239ZM65.8795 67.6211C65.8795 68.952 66.3161 70.019 67.1833 70.8234C68.0566 71.6278 69.1934 72.027 70.6075 72.027C72.0768 72.027 73.2473 71.6171 74.1236 70.7958C75.0046 69.9775 75.4427 68.8093 75.4427 67.2895V56.6262H80.1999V67.4798C80.1999 70.2754 79.3741 72.3908 77.7225 73.8354C76.0786 75.2769 73.7222 76 70.6627 76C67.6353 76 65.2896 75.2647 63.6212 73.8078C61.9466 72.3448 61.1116 70.2493 61.1116 67.509V56.6246H65.8795V67.6211ZM88.2402 67.991V75.7559H83.4831V56.6277H92.0076C93.8599 56.6277 95.3613 57.165 96.5165 58.235C97.6733 59.3081 98.2524 60.61 98.2524 62.1328C98.2524 64.2406 97.1615 65.8003 94.9722 66.8151C95.9405 67.2465 96.8536 68.4178 97.71 70.3352C98.5726 72.248 99.403 74.0596 100.207 75.7559H94.9722C94.6658 75.125 94.125 73.9229 93.3543 72.1529C92.5852 70.3844 91.9218 69.2437 91.3718 68.7433C90.8249 68.2459 90.2289 67.991 89.6053 67.991H88.2402ZM92.6572 63.9152C93.1276 63.5375 93.362 63.0002 93.362 62.2956C93.362 60.854 92.4565 60.131 90.6441 60.131H88.2418V64.4862H90.7559C91.5557 64.4862 92.1899 64.2928 92.6572 63.9152ZM102.587 56.6262H107.342V75.7544H102.587V56.6262Z" fill="white"/>
+</svg>
+
+  </div>
+
+  <!-- Search Field -->
+  <div class="search-field">
+    <div class="icon-box">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 7.79297C0 6.71875 0.201823 5.71289 0.605469 4.77539C1.00911 3.83138 1.56901 3.0013 2.28516 2.28516C3.0013 1.56901 3.82812 1.00911 4.76562 0.605469C5.70964 0.201823 6.71875 0 7.79297 0C8.86719 0 9.87305 0.201823 10.8105 0.605469C11.7546 1.00911 12.5846 1.56901 13.3008 2.28516C14.0169 3.0013 14.5768 3.83138 14.9805 4.77539C15.3841 5.71289 15.5859 6.71875 15.5859 7.79297C15.5859 8.6849 15.4427 9.53125 15.1562 10.332C14.8763 11.1328 14.4857 11.8587 13.9844 12.5098L18.7598 17.3145C18.8639 17.4186 18.9421 17.5391 18.9941 17.6758C19.0527 17.8125 19.082 17.959 19.082 18.1152C19.082 18.3301 19.0332 18.5254 18.9355 18.7012C18.8444 18.877 18.7142 19.0137 18.5449 19.1113C18.3757 19.2155 18.1803 19.2676 17.959 19.2676C17.8027 19.2676 17.653 19.2383 17.5098 19.1797C17.373 19.1276 17.2461 19.0462 17.1289 18.9355L12.3242 14.1211C11.6862 14.5768 10.9831 14.9349 10.2148 15.1953C9.44661 15.4557 8.63932 15.5859 7.79297 15.5859C6.71875 15.5859 5.70964 15.3841 4.76562 14.9805C3.82812 14.5768 3.0013 14.0169 2.28516 13.3008C1.56901 12.5846 1.00911 11.7578 0.605469 10.8203C0.201823 9.8763 0 8.86719 0 7.79297ZM1.66992 7.79297C1.66992 8.63932 1.82617 9.43359 2.13867 10.1758C2.45768 10.9115 2.89714 11.5592 3.45703 12.1191C4.02344 12.679 4.67448 13.1185 5.41016 13.4375C6.15234 13.7565 6.94661 13.916 7.79297 13.916C8.63932 13.916 9.43034 13.7565 10.166 13.4375C10.9082 13.1185 11.5592 12.679 12.1191 12.1191C12.679 11.5592 13.1185 10.9115 13.4375 10.1758C13.7565 9.43359 13.916 8.63932 13.916 7.79297C13.916 6.94661 13.7565 6.1556 13.4375 5.41992C13.1185 4.67773 12.679 4.02669 12.1191 3.4668C11.5592 2.90039 10.9082 2.46094 10.166 2.14844C9.43034 1.82943 8.63932 1.66992 7.79297 1.66992C6.94661 1.66992 6.15234 1.82943 5.41016 2.14844C4.67448 2.46094 4.02344 2.90039 3.45703 3.4668C2.89714 4.02669 2.45768 4.67773 2.13867 5.41992C1.82617 6.1556 1.66992 6.94661 1.66992 7.79297Z" fill="white"/>
+      </svg>
+    </div>
+    <input
+      class="search-input"
+      id="searchInput"
+      type="number"
+      inputmode="numeric"
+      placeholder="Numer stacji"
+      autocomplete="off"
+    />
+  </div>
+
+  <!-- Station Name -->
+  <div class="station-name" id="stationName">
+    <span id="stationNameText"></span>
+  </div>
+
+  <!-- Nav Button -->
+  <button class="btn-nav" id="btnNav" aria-label="Nawiguj">
+    <div class="icon-box">
+      <svg width="16" height="21" viewBox="0 0 16 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.06445 20.3125C0.732422 20.3125 0.472005 20.1986 0.283203 19.9707C0.094401 19.7493 0 19.4727 0 19.1406C0 18.9583 0.0292969 18.7598 0.0878906 18.5449C0.152995 18.3366 0.221354 18.1315 0.292969 17.9297L6.40625 1.25C6.5625 0.820312 6.7513 0.504557 6.97266 0.302734C7.20052 0.100911 7.45443 0 7.73438 0C8.01432 0 8.26497 0.100911 8.48633 0.302734C8.71419 0.504557 8.90625 0.820312 9.0625 1.25L15.166 17.9297C15.2376 18.1315 15.3027 18.3366 15.3613 18.5449C15.4264 18.7598 15.459 18.9583 15.459 19.1406C15.459 19.4727 15.3646 19.7493 15.1758 19.9707C14.987 20.1986 14.7266 20.3125 14.3945 20.3125C14.1536 20.3125 13.9388 20.2637 13.75 20.166C13.5677 20.0684 13.3561 19.9023 13.1152 19.668L7.87109 14.4629C7.8125 14.4043 7.76693 14.375 7.73438 14.375C7.69531 14.375 7.64974 14.4043 7.59766 14.4629L2.34375 19.668C2.10286 19.9023 1.88802 20.0684 1.69922 20.166C1.51693 20.2637 1.30534 20.3125 1.06445 20.3125Z" fill="white"/>
+      </svg>
+    </div>
+  </button>
+
+</div>
+
+<script>
+const STATIONS = [{"n":"6419","name":"Koneser","lat":52.25602,"lng":21.046219},{"n":"6413","name":"Nestle House","lat":52.183992,"lng":21.00984},{"n":"9402","name":"UKSW","lat":52.296226,"lng":20.958327},{"n":"9403","name":"Metro Młociny","lat":52.290974,"lng":20.929556},{"n":"9404","name":"Marymoncka - Dewajtis","lat":52.290173,"lng":20.95037},{"n":"9405","name":"Metro Wawrzyszew","lat":52.285914,"lng":20.940561},{"n":"9406","name":"Redutowa - Pustola","lat":52.233682,"lng":20.940959},{"n":"9407","name":"Metro Stare Bielany","lat":52.281627,"lng":20.949887},{"n":"9409","name":"Bielany-Ratusz","lat":52.276838,"lng":20.948216},{"n":"9410","name":"Metro Słodowiec","lat":52.276157,"lng":20.961667},{"n":"9411","name":"OSiR Żoliborz","lat":52.277729,"lng":20.985734},{"n":"9412","name":"al. Komandosów","lat":52.253001,"lng":21.168017},{"n":"9413","name":"al. Reymonta - Conrada","lat":52.270941,"lng":20.932627},{"n":"9414","name":"Broniewskiego - Perzyńskiego","lat":52.270634,"lng":20.950477},{"n":"9415","name":"Metro Marymont","lat":52.27142,"lng":20.97271},{"n":"9416","name":"Metro Plac Wilsona","lat":52.269299,"lng":20.98346},{"n":"9417","name":"Broniewskiego - Włościańska","lat":52.266786,"lng":20.963697},{"n":"9418","name":"Broniewskiego - Krasińskiego","lat":52.264398,"lng":20.972318},{"n":"9419","name":"Wybrzeże Gdyńskie - KS Spójnia","lat":52.267875,"lng":21.002067},{"n":"9420","name":"Plac Grunwaldzki","lat":52.262405,"lng":20.980255},{"n":"9421","name":"Rondo Śmigielskiego","lat":52.247163,"lng":21.189258},{"n":"9422","name":"Plac Inwalidów ","lat":52.263922,"lng":20.989578},{"n":"9423","name":"Pętla Stare Bemowo","lat":52.258245,"lng":20.898614},{"n":"9424","name":"Pętla Nowe Bemowo","lat":52.261003,"lng":20.923905},{"n":"9425","name":"Obrońców Tobruku - Pieniążka","lat":52.25759,"lng":20.932337},{"n":"9426","name":"Powązkowska - Krasińskiego","lat":52.259323,"lng":20.960551},{"n":"9427","name":"Powązkowska - Plac Niemena","lat":52.256315,"lng":20.968231},{"n":"9428","name":"Przasnyska - Rydygiera","lat":52.258593,"lng":20.971005},{"n":"9429","name":"Powązkowska - Burakowska","lat":52.253594,"lng":20.979874},{"n":"9430","name":"Metro Dworzec Gdański","lat":52.257602,"lng":20.994498},{"n":"9431","name":"Powstańców Śląskich - Radiowa","lat":52.252626,"lng":20.913638},{"n":"9432","name":"Obozowa - Ciołka","lat":52.246595,"lng":20.942922},{"n":"9433","name":"al. Prymasa Tysiąclecia - Kasprzaka","lat":52.227451,"lng":20.956839},{"n":"9434","name":"Obozowa - Radziwie","lat":52.246037,"lng":20.962463},{"n":"9435","name":"al. Jana Pawła II - Stawki","lat":52.251471,"lng":20.985705},{"n":"9436","name":"Stawki - Dubois","lat":52.253153,"lng":20.991552},{"n":"9437","name":"Andersa - Muranowska","lat":52.25416,"lng":20.998085},{"n":"9438","name":"Sanguszki - Wybrzeże Gdańskie","lat":52.255877,"lng":21.009982},{"n":"9439","name":"Bysławska","lat":52.159742,"lng":21.205322},{"n":"9440","name":"Okopowa - Anielewicza","lat":52.244114,"lng":20.977868},{"n":"9441","name":"Smocza - Miła","lat":52.248553,"lng":20.983458},{"n":"9442","name":"Smocza - Anielewicza","lat":52.246149,"lng":20.985462},{"n":"9443","name":"al. Jana Pawła II - Anielewicza","lat":52.247017,"lng":20.989516},{"n":"9444","name":"Anielewicza - Zamenhofa","lat":52.249052,"lng":20.994892},{"n":"9445","name":"Centrum Zdrowia Dziecka","lat":52.207438,"lng":21.191126},{"n":"9446","name":"Bonifraterska - Franciszkańska","lat":52.251549,"lng":21.002749},{"n":"9447","name":"Plac Krasińskich","lat":52.248862,"lng":21.005578},{"n":"9448","name":"Kościelna - Piesza","lat":52.254116,"lng":21.009353},{"n":"9449","name":"Bora-Komorowskiego - Fieldorfa 'Nila'","lat":52.22533,"lng":21.09229},{"n":"9450","name":"Metro Bemowo","lat":52.239503,"lng":20.913805},{"n":"9451","name":"Metro Księcia Janusza","lat":52.239541,"lng":20.942309},{"n":"9452","name":"Czerwonych Beretów - Frontowa","lat":52.262273,"lng":21.177609},{"n":"9453","name":"Leszno - Młynarska","lat":52.236881,"lng":20.972332},{"n":"9454","name":"Dzielna - Bellottiego","lat":52.242888,"lng":20.980379},{"n":"9455","name":"Wolność - Bellottiego","lat":52.24108,"lng":20.98316},{"n":"9456","name":"Smocza - Nowolipki","lat":52.243545,"lng":20.987351},{"n":"9457","name":"al. Jana Pawła II - Nowolipki","lat":52.244577,"lng":20.99177},{"n":"9458","name":"Powstańców Śląskich - Człuchowska","lat":52.22868,"lng":20.91509},{"n":"9459","name":"Jana Olbrachta - Antka Rozpylacza","lat":52.234223,"lng":20.934782},{"n":"9460","name":"Okopowa - Leszno","lat":52.238349,"lng":20.978226},{"n":"9461","name":"al. Jana Pawła II - al. Solidarności","lat":52.242178,"lng":20.993004},{"n":"9462","name":"Dworzec Zachodni","lat":52.217954,"lng":20.966967},{"n":"9463","name":"Andersa - Długa","lat":52.244973,"lng":21.001274},{"n":"9464","name":"Pl. Bankowy - Ratusz","lat":52.243175,"lng":21.00177},{"n":"9465","name":"Senatorska - Bielańska","lat":52.243571,"lng":21.006692},{"n":"9466","name":"Pętla Podskarbińska","lat":52.254189,"lng":21.073601},{"n":"9467","name":"Miodowa","lat":52.246541,"lng":21.011265},{"n":"9468","name":"Krakowskie Przedmieście - Trębacka","lat":52.243578,"lng":21.01409},{"n":"9469","name":"Mariensztat","lat":52.246561,"lng":21.017476},{"n":"9470","name":"Powstańców Śląskich - Połczyńska","lat":52.220591,"lng":20.917589},{"n":"9471","name":"Jana Kazimierza - Gizów","lat":52.224946,"lng":20.945553},{"n":"9472","name":"Gościniec","lat":52.222881,"lng":21.223207},{"n":"9473","name":"al. Prymasa Tysiąclecia - Górczewska","lat":52.237662,"lng":20.955493},{"n":"9474","name":"Wolska - Płocka","lat":52.233341,"lng":20.965197},{"n":"9475","name":"Kasprzaka - Skierniewicka","lat":52.228522,"lng":20.969639},{"n":"9476","name":"Kasprzaka - Karolkowa","lat":52.22898,"lng":20.97843},{"n":"9477","name":"Muzeum Powstania Warszawskiego","lat":52.233427,"lng":20.981703},{"n":"9478","name":"Metro Rondo Daszyńskiego","lat":52.229707,"lng":20.983223},{"n":"9479","name":"Górczewska - Płocka","lat":52.23734,"lng":20.965578},{"n":"9480","name":"Żelazna - Chłodna","lat":52.237314,"lng":20.988849},{"n":"9481","name":"Żelazna - Prosta","lat":52.232386,"lng":20.992293},{"n":"9482","name":"al. Jana Pawła II - Plac Mirowski","lat":52.238024,"lng":20.995973},{"n":"9483","name":"al. Jana Pawła II - Grzybowska","lat":52.235706,"lng":20.996703},{"n":"9484","name":"Rondo ONZ","lat":52.232628,"lng":20.997123},{"n":"9485","name":"Ptasia - Zimna","lat":52.239571,"lng":21.000301},{"n":"9486","name":"Emilii Plater - Świętokrzyska","lat":52.23373,"lng":21.002811},{"n":"9487","name":"Plac Grzybowski","lat":52.235858,"lng":21.003731},{"n":"9488","name":"Marszałkowska - Królewska","lat":52.238549,"lng":21.006889},{"n":"9489","name":"Wolska - Hubalczyków ","lat":52.223197,"lng":20.929879},{"n":"9491","name":"Plac Małachowskiego","lat":52.239662,"lng":21.011951},{"n":"9492","name":"Plac Powstańców Warszawy","lat":52.235973,"lng":21.012539},{"n":"9494","name":"Metro Nowy Świat - Uniwersytet","lat":52.236884,"lng":21.017543},{"n":"9495","name":"Oboźna - Kopernika","lat":52.23829,"lng":21.018423},{"n":"9496","name":"Lipowa - Dobra","lat":52.241841,"lng":21.024114},{"n":"9497","name":"Centrum Nauki Kopernik","lat":52.241266,"lng":21.028187},{"n":"9498","name":"Sobieskiego - Nałęczowska","lat":52.175294,"lng":21.063173},{"n":"9499","name":"Żelazna - Sienna","lat":52.22983,"lng":20.993996},{"n":"9500","name":"al. Jana Pawła II - Złota","lat":52.230194,"lng":20.999486},{"n":"9501","name":"Emilii Plater - Złota","lat":52.230978,"lng":21.003676},{"n":"9503","name":"Matejki - Wiejska","lat":52.22492,"lng":21.026885},{"n":"9504","name":"al. Jerozolimskie - Krucza","lat":52.231056,"lng":21.016738},{"n":"9505","name":"Marymoncka - Przy Agorze","lat":52.295106,"lng":20.944576},{"n":"9506","name":"Marywilska - P&R Żerań","lat":52.315244,"lng":21.000138},{"n":"9507","name":"Topiel - Tamka","lat":52.237594,"lng":21.025689},{"n":"9508","name":"Metro Bródno","lat":52.293889,"lng":21.027245},{"n":"9509","name":"al. Jerozolimskie - Niemcewicza","lat":52.22206,"lng":20.979201},{"n":"9510","name":"Ochota-Ratusz","lat":52.222216,"lng":20.986629},{"n":"9511","name":"Plac Zawiszy","lat":52.225335,"lng":20.989825},{"n":"9512","name":"al. Jerozolimskie - Lindleya","lat":52.22622,"lng":20.996172},{"n":"9513","name":"Lindleya - szpital","lat":52.224054,"lng":20.997567},{"n":"9514","name":"Park Kultury w Powsinie","lat":52.11625,"lng":21.087655},{"n":"9515","name":"Metro Dworzec Wileński - Targowa","lat":52.254419,"lng":21.035632},{"n":"9516","name":"Belwederska - Gagarina","lat":52.207179,"lng":21.031355},{"n":"9517","name":"Emilii Plater - al. Jerozolimskie","lat":52.229046,"lng":21.005454},{"n":"9518","name":"Emilii Plater - Wspólna","lat":52.225892,"lng":21.006761},{"n":"9519","name":"Metro Centrum","lat":52.229939,"lng":21.010973},{"n":"9520","name":"Marszałkowska - Al. Jerozolimskie","lat":52.229286,"lng":21.011579},{"n":"9521","name":"Metro Kondratowicza ","lat":52.291748,"lng":21.048282},{"n":"9522","name":"Marszałkowska - Hoża","lat":52.226288,"lng":21.013571},{"n":"9523","name":"Krucza - Wspólna","lat":52.228266,"lng":21.017897},{"n":"9524","name":"Rondo de Gaulle'a","lat":52.23144,"lng":21.021304},{"n":"9525","name":"Plac Trzech Krzyży","lat":52.227849,"lng":21.023508},{"n":"9526","name":"Smolna - PKP Powiśle","lat":52.23324,"lng":21.026118},{"n":"9527","name":"Kruczkowskiego – PKP Powiśle","lat":52.233971,"lng":21.029991},{"n":"9528","name":"Czerniakowska- Szwoleżerów","lat":52.215851,"lng":21.046341},{"n":"9529","name":"Książęca - Rozbrat","lat":52.230087,"lng":21.030236},{"n":"9530","name":"Szczęśliwicka - APS","lat":52.217218,"lng":20.971361},{"n":"9531","name":"Kopińska - Białobrzeska","lat":52.217863,"lng":20.977596},{"n":"9532","name":"Plac Narutowicza","lat":52.217915,"lng":20.982816},{"n":"9533","name":"Raszyńska - Wawelska","lat":52.216641,"lng":20.987948},{"n":"9534","name":"Metro Ulrychów","lat":52.240163,"lng":20.931161},{"n":"9535","name":"al. Niepodległości - Nowowiejska","lat":52.220676,"lng":21.004555},{"n":"9536","name":"al. Armii Ludowej - al. Niepodległości","lat":52.216751,"lng":21.004732},{"n":"9537","name":"Noakowskiego - Koszykowa","lat":52.222683,"lng":21.00811},{"n":"9538","name":"Plac Politechniki","lat":52.219916,"lng":21.011682},{"n":"9539","name":"Poznańska - Zespół Szkół Gastronomicznych","lat":52.223582,"lng":21.012871},{"n":"9540","name":"Rondo Jazdy Polskiej","lat":52.217486,"lng":21.014295},{"n":"9541","name":"Metro Zacisze","lat":52.283476,"lng":21.062266},{"n":"9542","name":"Plac Zbawiciela","lat":52.220223,"lng":21.0179},{"n":"9543","name":"Plac Konstytucji","lat":52.222943,"lng":21.015821},{"n":"9544","name":"Mokotowska - Piękna","lat":52.223815,"lng":21.020786},{"n":"9545","name":"Plac Na Rozdrożu","lat":52.219962,"lng":21.02583},{"n":"9546","name":"Orlich Gniazd","lat":52.248845,"lng":20.920259},{"n":"9547","name":"Myśliwiecka - Rozbrat","lat":52.222113,"lng":21.034387},{"n":"9548","name":"Port Czerniakowski","lat":52.227685,"lng":21.044317},{"n":"9549","name":"Grójecka - Bitwy Warszawskiej 1920 roku","lat":52.212891,"lng":20.977878},{"n":"9550","name":"Dw. Wschodni – Lubelska","lat":52.25061,"lng":21.05336},{"n":"9551","name":"Stefana Banacha - UW","lat":52.210772,"lng":20.984756},{"n":"9552","name":"Biblioteka Narodowa","lat":52.212671,"lng":21.003437},{"n":"9553","name":"Marszałkowska - Litewska","lat":52.21691,"lng":21.01997},{"n":"9554","name":"Pętla Szczęśliwice","lat":52.208386,"lng":20.96311},{"n":"9555","name":"Dickensa - Geodetów","lat":52.206101,"lng":20.97033},{"n":"9556","name":"Żwirki i Wigury - Księcia Trojdena","lat":52.205197,"lng":20.985098},{"n":"9557","name":"Rakowiecka - Św. A. Boboli","lat":52.205545,"lng":20.998805},{"n":"9558","name":"al. Niepodległości - Batorego","lat":52.210833,"lng":21.007851},{"n":"9559","name":"Plac Unii Lubelskiej","lat":52.213238,"lng":21.021057},{"n":"9560","name":"Grójecka - PKP Rakowiec","lat":52.198639,"lng":20.965252},{"n":"9561","name":"Sanocka - Pruszkowska","lat":52.201765,"lng":20.98209},{"n":"9562","name":"Żwirki i Wigury - Racławicka","lat":52.198137,"lng":20.983372},{"n":"9563","name":"Wołoska - Kulskiego","lat":52.20177,"lng":20.99969},{"n":"9564","name":"Madalińskiego - Kazimierzowska","lat":52.204264,"lng":21.014428},{"n":"9565","name":"Puławska - Dworkowa","lat":52.205518,"lng":21.023103},{"n":"9566","name":"OSiR Wawer","lat":52.219474,"lng":21.162114},{"n":"9567","name":"Czerniakowska - Gagarina","lat":52.207728,"lng":21.047833},{"n":"9568","name":"Etiudy Rewolucyjnej - Miączyńska","lat":52.193813,"lng":20.991443},{"n":"9570","name":"Metro Racławicka","lat":52.199416,"lng":21.012138},{"n":"9571","name":"Puławska - Dolna","lat":52.199505,"lng":21.024098},{"n":"9572","name":"Sobieskiego - Chełmska","lat":52.201936,"lng":21.036893},{"n":"9573","name":"Czerniakowska - ZUS","lat":52.199845,"lng":21.05095},{"n":"9574","name":"PKP Ursus - Niedźwiadek","lat":52.191624,"lng":20.869008},{"n":"9575","name":"PKP Ursus","lat":52.196047,"lng":20.884935},{"n":"9576","name":"Sosnkowskiego - OSiR Ursus","lat":52.186994,"lng":20.890648},{"n":"9577","name":"Pętla Sadyba","lat":52.18155,"lng":21.068532},{"n":"9578","name":"Skoroszewska - Prystora","lat":52.190638,"lng":20.899944},{"n":"9579","name":"Książąt Mazowieckich - Heroldów","lat":52.302867,"lng":20.929504},{"n":"9580","name":"PKP Włochy","lat":52.205644,"lng":20.915914},{"n":"9581","name":"al. Jerozolimskie - Popularna","lat":52.20115,"lng":20.935342},{"n":"9582","name":"Włochy - Ratusz","lat":52.192471,"lng":20.959666},{"n":"9583","name":"Pętla Witolin","lat":52.236522,"lng":21.113097},{"n":"9584","name":"Metro Wierzbno","lat":52.188957,"lng":21.017447},{"n":"9585","name":"Puławska - Idzikowskiego","lat":52.18648,"lng":21.02538},{"n":"9586","name":"Sobieskiego - Mangalia","lat":52.188224,"lng":21.049931},{"n":"9588","name":"Wołoska - Woronicza ","lat":52.18937,"lng":21.00247},{"n":"9589","name":"Metro Wilanowska - Dworzec Południowy","lat":52.18082,"lng":21.023577},{"n":"9590","name":"Pętla Stegny","lat":52.1779,"lng":21.0487},{"n":"9591","name":"PKP Rembertów - Cyrulików","lat":52.257579,"lng":21.157396},{"n":"9592","name":"Pętla Bokserska","lat":52.170182,"lng":20.99584},{"n":"9593","name":"Rzymowskiego – Gotarda","lat":52.17105,"lng":21.005914},{"n":"9594","name":"al. Lotników - Modzelewskiego","lat":52.174435,"lng":21.012881},{"n":"9595","name":"Metro Służew","lat":52.173313,"lng":21.025731},{"n":"9596","name":"PKP Rembertów - Marsa","lat":52.256711,"lng":21.15805},{"n":"9597","name":"Branickiego - Rzeczypospolitej","lat":52.156896,"lng":21.076109},{"n":"9598","name":"al. Wilanowska - Przyczółkowa","lat":52.165588,"lng":21.083933},{"n":"9599","name":"Vogla - Syta","lat":52.16479,"lng":21.10925},{"n":"9600","name":"al. Rzeczypospolitej - Klimczaka","lat":52.160626,"lng":21.072325},{"n":"9601","name":"PKP Ursus Północny ","lat":52.206211,"lng":20.887875},{"n":"9602","name":"Przyczółkowa - Branickiego","lat":52.159374,"lng":21.086449},{"n":"9603","name":"Kochanowskiego - Galla Anonima","lat":52.269484,"lng":20.942087},{"n":"9604","name":"Metro Ursynów","lat":52.162258,"lng":21.028076},{"n":"9605","name":"Jastrzębowskiego - SGGW","lat":52.162401,"lng":21.038381},{"n":"9606","name":"PKP Wawer","lat":52.223045,"lng":21.149132},{"n":"9607","name":"Metro Stokłosy","lat":52.156867,"lng":21.03384},{"n":"9608","name":"Rosoła - Ciszewskiego - SGGW","lat":52.157289,"lng":21.044008},{"n":"9609","name":"Puławska - Pileckiego","lat":52.152355,"lng":21.018825},{"n":"9610","name":"Ciszewskiego - Pileckiego","lat":52.149506,"lng":21.033253},{"n":"9611","name":"PKP Wesoła","lat":52.253523,"lng":21.224155},{"n":"9612","name":"Metro Imielin","lat":52.149311,"lng":21.045336},{"n":"9613","name":"Rosoła - Wesoła","lat":52.152233,"lng":21.056392},{"n":"9614","name":"Pileckiego - Alternatywy","lat":52.14272,"lng":21.038362},{"n":"9615","name":"Dereniowa - Płaskowickiej","lat":52.142735,"lng":21.044813},{"n":"9616","name":"Stryjeńskich - Belgradzka","lat":52.137604,"lng":21.050553},{"n":"9617","name":"Metro Natolin","lat":52.140391,"lng":21.056819},{"n":"9618","name":"Belgradzka - Rosoła","lat":52.142018,"lng":21.066076},{"n":"9619","name":"Stryjeńskich - Wąwozowa","lat":52.131433,"lng":21.056156},{"n":"9620","name":"Ordonówny - Światowida","lat":52.332605,"lng":20.94184},{"n":"9621","name":"Metro Kabaty","lat":52.131093,"lng":21.06548},{"n":"9622","name":"Wąwozowa - Rosoła","lat":52.133207,"lng":21.074828},{"n":"9623","name":"Skarbka z Gór - Berensona","lat":52.324196,"lng":21.056547},{"n":"9624","name":"Lazurowa - Sternicza","lat":52.220789,"lng":20.897887},{"n":"9625","name":"Światowida - Mehoffera","lat":52.322698,"lng":20.944811},{"n":"9626","name":"Grupy AK Krybar","lat":52.208763,"lng":21.066342},{"n":"9627","name":"Białołęka - Ratusz","lat":52.321127,"lng":20.971296},{"n":"9628","name":"Myśliborska - al. Kuklińskiego","lat":52.313298,"lng":20.965532},{"n":"9629","name":"Modlińska - Żerańska","lat":52.303198,"lng":20.989167},{"n":"9630","name":"Świderska - Świętosławskiego","lat":52.316765,"lng":20.95171},{"n":"9631","name":"Pętla Bródno - Podgrodzie","lat":52.300027,"lng":21.042527},{"n":"9632","name":"Plac Hallera - Dąbrowszczaków","lat":52.261381,"lng":21.030544},{"n":"9633","name":"Kaliskiego - Kocjana ","lat":52.249465,"lng":20.897757},{"n":"9634","name":"Kondratowicza - Chodecka","lat":52.292359,"lng":21.040962},{"n":"9635","name":"Kondratowicza - Przy Grodzisku","lat":52.292425,"lng":21.056741},{"n":"9636","name":"Wysockiego - Poborzańska","lat":52.287807,"lng":21.021383},{"n":"9637","name":"Rembielińska - Wyszogrodzka","lat":52.288592,"lng":21.031009},{"n":"9638","name":"Radzymińska - Łodygowa","lat":52.286662,"lng":21.07535},{"n":"9639","name":"Wysockiego - Matki Teresy z Kalkuty","lat":52.281231,"lng":21.025853},{"n":"9640","name":"Rondo Bułhaka","lat":52.246276,"lng":21.223424},{"n":"9641","name":"Metro Trocka","lat":52.275799,"lng":21.056083},{"n":"9643","name":"Św. Wincentego – Kołowa","lat":52.273679,"lng":21.043095},{"n":"9644","name":"Metro Targówek Mieszkaniowy ","lat":52.269795,"lng":21.051284},{"n":"9645","name":"Radzymińska - Trocka","lat":52.272602,"lng":21.06321},{"n":"9646","name":"Bukowiecka - Zamkowa","lat":52.27347,"lng":21.07698},{"n":"9647","name":"Radzymińska - Piotra Skargi","lat":52.266889,"lng":21.058568},{"n":"9648","name":"Wybrzeże Helskie - ZOO","lat":52.261437,"lng":21.015574},{"n":"9649","name":"Rondo Starzyńskiego","lat":52.263182,"lng":21.021278},{"n":"9650","name":"Darwina - Nusbauma-Hilarowicza","lat":52.26421,"lng":21.02618},{"n":"9651","name":"Namysłowska - Darwina","lat":52.265499,"lng":21.031197},{"n":"9652","name":"Rondo Żaba","lat":52.269041,"lng":21.037949},{"n":"9653","name":"Jagiellońska - Plac Hallera","lat":52.259066,"lng":21.026144},{"n":"9656","name":"Ratuszowa - ZOO","lat":52.253851,"lng":21.02328},{"n":"9657","name":"Jagiellońska - Ratuszowa","lat":52.256355,"lng":21.029538},{"n":"9658","name":"11 Listopada - Ratuszowa","lat":52.261449,"lng":21.037614},{"n":"9659","name":"Park Kępa Potocka","lat":52.28794,"lng":20.978694},{"n":"9660","name":"11 listopada - Inżynierska","lat":52.258547,"lng":21.035176},{"n":"9661","name":"Ostrobramska - Motorowa","lat":52.235377,"lng":21.080967},{"n":"9662","name":"Floriańska - Park Praski","lat":52.252425,"lng":21.030388},{"n":"9663","name":"Rondo Fieldorfa","lat":52.264811,"lng":21.169537},{"n":"9664","name":"Wileńska - Rzeszotarskiej","lat":52.257958,"lng":21.03998},{"n":"9665","name":"al. Prymasa Tysiąclecia - Obozowa","lat":52.247585,"lng":20.9568},{"n":"9666","name":"Jagiellońska - Okrzei","lat":52.251577,"lng":21.035361},{"n":"9667","name":"Sierakowskiego - Kłopotowskiego","lat":52.250633,"lng":21.031117},{"n":"9668","name":"Targowa - Ząbkowska","lat":52.252088,"lng":21.038137},{"n":"9669","name":"Rondo Mościckiego","lat":52.23393,"lng":21.126986},{"n":"9670","name":"Radzymińska - Wiosenna","lat":52.255882,"lng":21.049793},{"n":"9671","name":"Radzymińska - Łomżyńska","lat":52.259519,"lng":21.052616},{"n":"9672","name":"Pętla Kawęczyńska - Bazylika","lat":52.258351,"lng":21.058534},{"n":"9673","name":"Targowa - Kijowska","lat":52.249865,"lng":21.042911},{"n":"9674","name":"Dworzec Wschodni - Kijowska","lat":52.252745,"lng":21.051033},{"n":"9675","name":"Metro Stadion Narodowy","lat":52.247314,"lng":21.042731},{"n":"9676","name":"al. Zieleniecka - Teatr Powszechny","lat":52.247231,"lng":21.047646},{"n":"9677","name":"Grochowska - Mińska","lat":52.247136,"lng":21.056658},{"n":"9678","name":"Praga-Południe-Ratusz","lat":52.2464,"lng":21.06868},{"n":"9679","name":"Dwernickiego - Siennicka","lat":52.2504,"lng":21.077598},{"n":"9680","name":"Stalowa - Czynszowa","lat":52.260532,"lng":21.04172},{"n":"9681","name":"Wybrzeże Szczecińskie - Stadion Narodowy","lat":52.237208,"lng":21.043758},{"n":"9682","name":"Rondo Waszyngtona - Stadion Narodowy","lat":52.238733,"lng":21.050845},{"n":"9683","name":"Waszyngtona - Kinowa","lat":52.242281,"lng":21.07116},{"n":"9684","name":"Rondo Wiatraczna","lat":52.244564,"lng":21.083806},{"n":"9685","name":"Francuska - Walecznych","lat":52.234745,"lng":21.053651},{"n":"9686","name":"Międzynarodowa - Walecznych","lat":52.236598,"lng":21.064774},{"n":"9687","name":"Plac Szembeka","lat":52.242685,"lng":21.102494},{"n":"9688","name":"Pętla Gocławek","lat":52.237559,"lng":21.120087},{"n":"9689","name":"Brukselska - PROM","lat":52.22585,"lng":21.060062},{"n":"9690","name":"Metro Szwedzka","lat":52.263298,"lng":21.046161},{"n":"9691","name":"Stanów Zjednoczonych - Międzynarodowa","lat":52.230115,"lng":21.067961},{"n":"9692","name":"Ostrobramska - Zamieniecka","lat":52.23483,"lng":21.09975},{"n":"9693","name":"Afrykańska - Egipska","lat":52.225197,"lng":21.071289},{"n":"9694","name":"Bora-Komorowskiego - Umińskiego","lat":52.223495,"lng":21.10133},{"n":"9695","name":"Fieldorfa - Bukowskiego","lat":52.229435,"lng":21.094524},{"n":"9696","name":"Rechniewskiego - Nowaka-Jeziorańskiego","lat":52.22974,"lng":21.10624},{"n":"9697","name":"Meissnera - Fieldorfa","lat":52.222228,"lng":21.09076},{"n":"9493","name":"Krakowskie Przedmieście - Traugutta","lat":52.239374,"lng":21.016657},{"n":"6401","name":"Arkadia","lat":52.25574,"lng":20.984343},{"n":"6404","name":"Blue City","lat":52.213254,"lng":20.954946},{"n":"6407","name":"Eurocentrum","lat":52.220709,"lng":20.972267},{"n":"6409","name":"Westfield Mokotów ","lat":52.178689,"lng":21.002814},{"n":"6420","name":"The Park Warsaw","lat":52.189299,"lng":20.945091},{"n":"6423","name":"Warsaw Spire","lat":52.232538,"lng":20.983233},{"n":"6424","name":"Wola Park","lat":52.2414,"lng":20.929192},{"n":"9698","name":"Szaserów – Garwolińska","lat":52.249684,"lng":21.092105},{"n":"9701","name":"Wolska - Redutowa","lat":52.226543,"lng":20.941158},{"n":"9702","name":"Żwirki i Wigury - Woronicza","lat":52.194579,"lng":20.982139},{"n":"9699","name":"Marymoncka - Podleśna","lat":52.281039,"lng":20.958925},{"n":"6426","name":"Factory Annopol","lat":52.298441,"lng":21.024163},{"n":"9569","name":"Bulwar - most Śląsko - Dąbrowski","lat":52.247972,"lng":21.019663},{"n":"9700","name":"Metro Centrum Nauki Kopernik","lat":52.239358,"lng":21.031136},{"n":"9401","name":"Wołoska - Odyńca","lat":52.195747,"lng":21.002554},{"n":"6441","name":"Platan Park","lat":52.1544,"lng":21.0064},{"n":"6444","name":"Marynarska 12","lat":52.181168,"lng":20.992578},{"n":"6446","name":"Procter & Gamble","lat":52.260904,"lng":21.072881},{"n":"6445","name":"PRAGA 306/PZO","lat":52.247246,"lng":21.062545},{"n":"6448","name":"Signum Work Station","lat":52.183037,"lng":20.991542},{"n":"6450","name":"Park Rozwoju","lat":52.186191,"lng":20.988205},{"n":"6429","name":"Uniwersytet - SWPS ","lat":52.247531,"lng":21.066431},{"n":"9642","name":"Powstańców Śląskich - Wrocławska","lat":52.257631,"lng":20.91931},{"n":"9587","name":"PKP Międzylesie","lat":52.205017,"lng":21.168801},{"n":"9408","name":"Wólczyńska - Conrada","lat":52.281063,"lng":20.923405},{"n":"6453","name":"Miasteczko Orange","lat":52.208525,"lng":20.946525},{"n":"6454","name":"Warsaw UNIT","lat":52.229887,"lng":20.98569},{"n":"9502","name":"Korkowa","lat":52.23828,"lng":21.147235},{"n":"9703","name":"Paderewskiego - Czwartaków","lat":52.271148,"lng":21.149855},{"n":"9704","name":"Dolina Służewiecka - Nowoursynowska","lat":52.17034,"lng":21.041258},{"n":"9705","name":"Kłobucka – Jurajska","lat":52.1637,"lng":20.992412},{"n":"9706","name":"Puławska - Kajakowa","lat":52.129592,"lng":21.018367},{"n":"9707","name":"Kleszczowa – Krańcowa","lat":52.196958,"lng":20.923586},{"n":"9708","name":"Chrościckiego – al. 4 Czerwca 1989 r.","lat":52.209302,"lng":20.893987},{"n":"9709","name":"1 Sierpnia – DK Włochy","lat":52.194609,"lng":20.967765},{"n":"9710","name":"Włodarzewska - Maszynowa","lat":52.202733,"lng":20.950999},{"n":"9711","name":"Puławska – Pelikanów","lat":52.12293,"lng":21.01854},{"n":"9712","name":"Puławska – Karmazynowa ","lat":52.111877,"lng":21.01887},{"n":"9714","name":"Al.KEN – Płaskowickiej","lat":52.14447,"lng":21.052094},{"n":"9713","name":"Rembrandta – Miedza ","lat":52.280625,"lng":21.049645},{"n":"9715","name":"Aleja Wilanowska - Sobieskiego","lat":52.170234,"lng":21.068462},{"n":"9716","name":"Ursus Ratusz","lat":52.200496,"lng":20.893806},{"n":"9717","name":"Giserska - Habicha","lat":52.202161,"lng":20.883169},{"n":"9718","name":"EkoPark - Warszawska","lat":52.200323,"lng":20.874611},{"n":"9719","name":"PKP Gołąbki ","lat":52.208074,"lng":20.86491},{"n":"9720","name":"Warszawska - Hermana","lat":52.194985,"lng":20.862216},{"n":"6415","name":"City Point Targówek","lat":52.261518,"lng":21.08448},{"n":"9721","name":"al. Rzeczypospolitej - Oś Królewska","lat":52.16453,"lng":21.07056},{"n":"9722","name":"Wał Zawadowski - Zaściankowa","lat":52.17096,"lng":21.122148},{"n":"9723","name":"Drewny - Korbońskiego","lat":52.131222,"lng":21.098231},{"n":"9724","name":"WKD Raków","lat":52.194452,"lng":20.935516},{"n":"9725","name":"Ostródzka- Hemara","lat":52.326732,"lng":21.048469},{"n":"9726","name":"Solec – Al. 3 Maja","lat":52.234651,"lng":21.034109},{"n":"9727","name":"Sobieskiego – Bonifacego","lat":52.181743,"lng":21.056354},{"n":"6456","name":"Muzeum Woli – ”Bez Trzymanki”","lat":52.22756,"lng":20.989702}]
+;
+const map = {};
+STATIONS.forEach(s => map[s.n] = s);
+let current = null;
+
+const searchInput = document.getElementById('searchInput');
+const stationName = document.getElementById('stationName');
+const stationNameText = document.getElementById('stationNameText');
+const btnNav = document.getElementById('btnNav');
+const frame = document.getElementById('frame');
+
+function scaleFrame() {
+  const scale = Math.min(window.innerWidth / 402, window.innerHeight / 874, 1);
+  frame.style.transform = scale < 1 ? `scale(${scale})` : '';
+}
+window.addEventListener('resize', scaleFrame);
+scaleFrame();
+
+searchInput.addEventListener('input', () => {
+  let val = searchInput.value.replace(/\D/g, '').slice(0, 4);
+  if (searchInput.value !== val) searchInput.value = val;
+
+  if (!val) {
+    current = null;
+    btnNav.classList.remove('active');
+    stationName.classList.remove('visible');
+    return;
+  }
+
+  const found = map[val];
+  if (found) {
+    current = found;
+    btnNav.classList.add('active');
+    stationNameText.textContent = found.name;
+    stationName.classList.add('visible');
+  } else {
+    current = null;
+    btnNav.classList.remove('active');
+    if (val.length === 4) {
+      stationNameText.textContent = 'Nie znaleziono stacji';
+      stationName.classList.add('visible');
+    } else {
+      stationName.classList.remove('visible');
+    }
+  }
+});
+
+btnNav.addEventListener('click', () => {
+  if (!current) return;
+  window.open(`https://www.google.com/maps/dir/?api=1&destination=${current.lat},${current.lng}&travelmode=driving`, '_blank');
+});
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+}
+</script>
+</body>
+</html>
