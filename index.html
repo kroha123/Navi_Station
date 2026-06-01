@@ -286,10 +286,7 @@ if ('serviceWorker' in navigator) {
 // Fix iOS PWA white screen on return from external app
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
-    document.body.style.display = 'none';
-    requestAnimationFrame(() => {
-      document.body.style.display = '';
-    });
+    window.location.reload();
   }
 });
 </script>
