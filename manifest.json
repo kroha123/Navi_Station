@@ -1,8 +1,9 @@
 {
-  "name": "Veturilo Navigator",
-  "short_name": "Veturilo",
+  "name": "Navi Station",
+  "short_name": "Navi Station",
   "description": "Nawigacja do stacji Veturilo w Warszawie",
-  "start_url": "/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#141414",
   "theme_color": "#141414",
