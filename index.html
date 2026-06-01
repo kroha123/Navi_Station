@@ -282,6 +282,16 @@ btnNav.addEventListener('click', () => {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
 }
+
+// Fix iOS PWA white screen on return from external app
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    document.body.style.display = 'none';
+    requestAnimationFrame(() => {
+      document.body.style.display = '';
+    });
+  }
+});
 </script>
 </body>
 </html>
