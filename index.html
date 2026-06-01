@@ -41,11 +41,8 @@ body {
 */
 .frame {
   position: fixed;
-  /* Center horizontally, but never closer than 30px to edge */
-  left: max(
-    30px,
-    calc(50vw - 201px)
-  );
+  left: 50%;
+  transform: translateX(-50%);
   top: env(safe-area-inset-top, 0px);
   width: 402px;
   height: 874px;
