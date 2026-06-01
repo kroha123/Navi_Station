@@ -1,4 +1,4 @@
-const CACHE_NAME = 'navi-station-v6';
+const CACHE_NAME = 'navi-station-v7';
 const ASSETS = [
   './',
   './index.html',
