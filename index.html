@@ -274,7 +274,7 @@ searchInput.addEventListener('input', () => {
 
 btnNav.addEventListener('click', () => {
   if (!current) return;
-  window.open(`https://www.google.com/maps/dir/?api=1&destination=${current.lat},${current.lng}&travelmode=driving`, '_blank');
+  window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${current.lat},${current.lng}&travelmode=driving`;
 });
 </script>
 
@@ -283,12 +283,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
 }
 
-// Fix iOS PWA white screen on return from external app
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    window.location.reload();
-  }
-});
+
 </script>
 </body>
 </html>
